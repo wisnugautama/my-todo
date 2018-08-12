@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>my todos</title>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <h1>Welcome to My-Todos</h1>
+    <script>
+        window.fbAsyncInit = function() {
+          FB.init({
+            appId            : '210421869817495',
+            autoLogAppEvents : true,
+            xfbml            : true,
+            version          : 'v3.1'
+          });
+        };
+      
+        (function(d, s, id){
+           var js, fjs = d.getElementsByTagName(s)[0];
+           if (d.getElementById(id)) {return;}
+           js = d.createElement(s); js.id = id;
+           js.src = "https://connect.facebook.net/en_US/sdk.js";
+           fjs.parentNode.insertBefore(js, fjs);
+         }(document, 'script', 'facebook-jssdk'));
+
+         function checkLoginState() {
+            FB.getLoginStatus(function(response) {
+                // console.log(response.authResponse);
+                if (response.status == 'connected') {
+                    
+                    axios.post('http://localhost:3000/users/loginfb',response.authResponse)
+                    .then((data_fb) => {
+                        // console.log(data_fb.accessToken);
+                        console.log(data_fb.data);
+                        localStorage.setItem('token', data_fb.data.token)
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                    })
+                }
+            });
+         }
+      </script>
+    <fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
+    </fb:login-button>    
+</body>
+</html>
