@@ -1,6 +1,7 @@
 const User = require('../models/user');
 const axios = require('axios');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 
 const register = (req,res) => {
     const { name, email, username, password } = req.body
@@ -39,18 +40,22 @@ const register = (req,res) => {
 }
 
 const login = (req,res) => {
-    const { email } = req.body
+    const { email, password } = req.body
     User.findOne({
         email: email
     })
         .then((data_user) => {
-            let token = jwt.sign( { id: data_user._id, username: data_user.username, email: data_user.email }, 'smbvabvlue')
             if (data_user) {
-                res.status(200).json({
-                    message: `User Successfully logged in`,
-                    token: token
-                })
+                let check_pass = bcrypt.compareSync(password, data_user.password);
+                if (check_pass) {
+                    let token = jwt.sign( { id: data_user._id, username: data_user.username, email: data_user.email }, 'smbvabvlue')
+                    res.status(200).json({
+                        message: `Successfully login`,
+                        token
+                    })
+                } 
             }
+            
         })
         .catch((err) => {
             res.status(400).json({
