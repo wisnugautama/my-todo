@@ -24,7 +24,7 @@
     <!-- development version, includes helpful console warnings -->
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 
-    <!-- axio -->
+    <!-- axios -->
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
     <!-- Debug CSS -->
@@ -42,8 +42,12 @@
                             <br>
                             <img src="./img/icons/logo.png" alt="">
                             <br><br>
-                            <h5 class="card-title text-center">Login Form</h5>
+                            <h5 class="card-title text-center">Register Form</h5>
                             <form class="form" style="text-align: center;">
+                                <div class="form-label-group">
+                                    <input v-model="name" type="text" class="form-control inpt" placeholder="name" required>
+                                    <hr>
+                                </div>
                                 <div class="form-label-group">
                                     <input v-model="email" type="email" class="form-control inpt" placeholder="Email address" required>
                                     <hr>
@@ -53,8 +57,8 @@
                                     <input v-model="password" type="password" class="form-control inpt" placeholder="Password" required>
                                     <hr>
                                 </div>
-                                <p>Don't Have an Account? <a href="./register.html" style="color: brown;">Register here</a></p>
-                                <button class="btn custom-btn" v-on:click="login" type="submit">Login</button>
+                                <p>Already Have an Account? <a href="./index.html" style="color: brown;">Login here</a></p>
+                                <button class="btn custom-btn" type="submit" v-on:click="register">Register</button>
                                 <br><br>
                                 <p style="text-align: center;">OR</p>
                                 Login via Facebook :

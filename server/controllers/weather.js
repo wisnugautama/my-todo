@@ -1,11 +1,12 @@
 const axios = require('axios')
+require('dotenv').config()
 
 const getWeather = (req,res) => {
-    const { city } = req.body
-    axios.get(`https://api.weatherbit.io/v2.0/current?city=${city}&key=a8f4de2dfdd3484facfd003131fd619c`)
+    const city = req.params.city
+    axios.get(`https://api.weatherbit.io/v2.0/current?city=${city}&key=${process.env.weather_token}`)
     .then(function(response){
         res.status(200).json({
-            data: response.data
+            data: response.data.data
         })
     })
     .catch(function(err){

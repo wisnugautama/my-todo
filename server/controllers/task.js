@@ -1,10 +1,15 @@
 const Task = require('../models/task')
+const jwt = require('jsonwebtoken')
+require('dotenv').config()
 
-const createTask = (req,res) => {
-    const { task, date } = req.body
+const createTask = (req,res) => {    
+    const { task_name, due_date, token, priority } = req.body
+    var decoded = jwt.verify(token, process.env.jwt_secret)
     Task.create({
-        task_name: task,
-        due_date: date
+        task_name: task_name,
+        due_date: new Date(due_date),
+        userId: decoded.id,
+        priority
     })
         .then((data) => {
             res.status(201).json({
@@ -19,8 +24,31 @@ const createTask = (req,res) => {
         })
 }
 
-const findAllTask = (req,res) => {
-    Task.find()
+const findOneTask = (req,res) => {
+    Task.findOne({
+        _id: req.params.id
+    })
+        .then((task) => {
+            res.status(200).json({
+                message: `task`,
+                data: task
+            })
+        })
+        .catch((err) => {
+            res.status(400).json({
+                message: err.message
+            })
+        });
+}
+
+const findNotDoneTask = (req,res) => {
+    let token = req.params.token
+    var decoded = jwt.verify(token, process.env.jwt_secret)
+    Task.find({
+        userId: decoded.id,
+        status: false,
+        priority: false
+    })
         .then((data_task) => {
             res.status(200).json({
                 message: `task list`,
@@ -34,17 +62,60 @@ const findAllTask = (req,res) => {
         })
 }
 
+const findDoneTask = (req,res) => {
+    let token = req.params.token
+    var decoded = jwt.verify(token, process.env.jwt_secret)
+    Task.find({
+        userId: decoded.id,
+        status: true
+    })
+        .then((data_tasks) => {
+            res.status(200).json({
+                message: `task list`,
+                data: data_tasks
+            })
+        })
+        .catch((err) => {
+            res.status(400).json({
+                message: err.message
+            })
+        });
+}
+
+const getPriorityTask = (req,res) => {
+    let token = req.params.token
+    let decoded = jwt.verify(token, process.env.jwt_secret)
+    Task.find({
+        userId: decoded.id,
+        priority: true,
+        status: false
+    })
+        .then((tasks) => {
+            res.status(200).json({
+                message: `task list`,
+                data: tasks
+            })
+        })
+        .catch((err) => {
+            res.status(400).json({
+                message: err.message,
+            })
+        })
+}
+
 const updateTask = (req,res) => {
-    const { task, date } = req.body
+    const { task_name, due_date } = req.body
+    console.log(req.body);
+    console.log(req.params);
     Task.updateOne({
         _id: req.params.id
     }, {
-        task_name: task, 
-        due_date: date
+        task_name: task_name, 
+        due_date: due_date
     })
         .then(() => {
             res.status(201).json({
-                message: `task successfully updated`
+                message: `task successfully updated`,
             })
         })
         .catch((err) => {
@@ -59,7 +130,7 @@ const deleteTask = (req,res) => {
     Task.deleteOne({
         _id: id
     })
-        .then((data) => {
+        .then(() => {
             res.status(201).json({
                 message: `task successfully deleted`
             })
@@ -71,9 +142,32 @@ const deleteTask = (req,res) => {
         })
 }
 
+const doneTask = (req,res) => {
+    const { id } = req.params
+    Task.updateOne({
+        _id: id
+    }, {
+        status: true
+    })
+        .then(() => {
+            res.status(201).json({
+                message: `Task Done!`
+            })
+        })
+        .catch((err) => {
+            res.status(400).json({
+                message: err.message
+            })
+        });
+}
+
 module.exports = {
     createTask,
-    findAllTask,
+    findOneTask,
+    findNotDoneTask,
+    findDoneTask,
     deleteTask,
-    updateTask
+    updateTask,
+    getPriorityTask,
+    doneTask
 }

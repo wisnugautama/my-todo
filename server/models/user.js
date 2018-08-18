@@ -1,5 +1,4 @@
 const mongoose = require('mongoose')
-const Schema = mongoose.Schema
 const bcrypt = require('bcryptjs');
 
 var userSchema = new mongoose.Schema({
@@ -14,10 +13,8 @@ var userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: true,
-        unique: true
-    },
-    tasks: [{type: Schema.Types.ObjectId, ref: 'Task'}]
+        required: true
+    }
 }, {
     timestamps: true
 })

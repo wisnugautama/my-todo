@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const Schema = mongoose.Schema
+var Schema = mongoose.Schema
 
 var taskSchema = new mongoose.Schema({
     task_name: {
@@ -10,10 +10,15 @@ var taskSchema = new mongoose.Schema({
         type: Date,
         required: true
     },
-    user_id: {
-        type: Schema.Types.ObjectId,
-        ref: 'User'
-    }
+    status: {
+        type: Boolean,
+        default: false
+    },
+    priority: {
+        type: Boolean,
+        default: false
+    },
+    userId: { type: Schema.Types.ObjectId, ref: 'User' }
 },{
     timestamps: true
 })

@@ -3,6 +3,8 @@ const User = require('../models/user')
 
 const authentication = (req, res, next) => {
     let token = req.headers.token
+    console.log(token);
+    
     if (token) {
         var decoded = jwt.verify(token, 'smbvabvlue')
         User.findOne({

@@ -1,10 +1,16 @@
 const router = require('express').Router()
-const { createTask, findAllTask, deleteTask, updateTask } = require('../controllers/task')
-const { authentication } = require('../middleware/authentication')
+const { createTask, findNotDoneTask, deleteTask, updateTask, getPriorityTask, findDoneTask ,doneTask, findOneTask } = require('../controllers/task')
+// const { authentication } = require('../middleware/authentication')
 
-router.post('/',authentication,createTask)
-router.get('/', authentication, findAllTask)
-router.delete('/:id', authentication, deleteTask)
-router.put('/:id', authentication , updateTask)
+router.get('/notdone/:token',findNotDoneTask)
+router.get('/done/:token', findDoneTask)
+router.get('/:id', findOneTask)
+router.get('/priority/:token', getPriorityTask)
+router.post('/',createTask)
+router.put('/:id',updateTask)
+router.put('/done/:id', doneTask)
+router.delete('/:id',deleteTask)
+
+
 
 module.exports = router
