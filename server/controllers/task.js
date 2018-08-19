@@ -1,5 +1,6 @@
 const Task = require('../models/task')
 const jwt = require('jsonwebtoken')
+const nodemailer = require('nodemailer');
 require('dotenv').config()
 
 const createTask = (req,res) => {    
@@ -144,12 +145,40 @@ const deleteTask = (req,res) => {
 
 const doneTask = (req,res) => {
     const { id } = req.params
+    var decoded = jwt.verify(req.body.token, process.env.jwt_secret)
+    let email_user = decoded.email
+    
     Task.updateOne({
         _id: id
     }, {
         status: true
     })
         .then(() => {
+            var transporter = nodemailer.createTransport({
+                service: 'gmail',
+                auth: {
+                      user: 'mytodo666@gmail.com',
+                      pass: 'venomous35'
+                }
+              });
+            
+                const mailOptions = {
+                from: 'mytodo', // sender address
+                to: `${email_user}`, // list of receivers
+                subject: 'Thanks For Using My Todo', // Subject line
+                html: 'thanks for using my todo! add your todo more in here <a href="http://localhost:8080/dashboard.html">mytodo.com</a>'
+              };
+            
+              transporter.sendMail(mailOptions, function (err, info) {
+                if(err)
+                    res.status(400).json({
+                        message: err.message
+                    })
+                else
+                    res.status(200).json({
+                        message: `email has been sent!`
+                    })
+              });
             res.status(201).json({
                 message: `Task Done!`
             })

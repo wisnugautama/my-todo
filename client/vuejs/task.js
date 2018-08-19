@@ -152,7 +152,9 @@ var task = new Vue({
         },
 
         doneTask(task_id){
-            axios.put(`http://localhost:3000/tasks/done/${task_id}`)
+            axios.put(`http://localhost:3000/tasks/done/${task_id}`,{
+                token
+            })
             .then(() => {
                 swal('Task Done!','Press OK', "success");
             }).catch((err) => {
