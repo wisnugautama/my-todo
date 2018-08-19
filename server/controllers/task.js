@@ -3,8 +3,8 @@ const jwt = require('jsonwebtoken')
 require('dotenv').config()
 
 const createTask = (req,res) => {    
-    const { task_name, due_date, token, priority } = req.body
-    var decoded = jwt.verify(token, process.env.jwt_secret)
+    const { task_name, due_date, priority } = req.body
+    var decoded = jwt.verify(req.headers.token, process.env.jwt_secret)
     Task.create({
         task_name: task_name,
         due_date: new Date(due_date),
@@ -42,7 +42,7 @@ const findOneTask = (req,res) => {
 }
 
 const findNotDoneTask = (req,res) => {
-    let token = req.params.token
+    let token = req.headers.token
     var decoded = jwt.verify(token, process.env.jwt_secret)
     Task.find({
         userId: decoded.id,
@@ -63,7 +63,7 @@ const findNotDoneTask = (req,res) => {
 }
 
 const findDoneTask = (req,res) => {
-    let token = req.params.token
+    let token = req.headers.token
     var decoded = jwt.verify(token, process.env.jwt_secret)
     Task.find({
         userId: decoded.id,

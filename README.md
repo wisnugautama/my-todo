@@ -15,8 +15,8 @@ users/loginfb  | POST   | login using fb         | email                        
 
 Route                 | Method | Description                             | Attributes                   |
 --------------------- | ------ | --------------------------------------- | ---------------------------- |
-tasks/notdone/:token  | GET    | get all user tasks with status not done | user token id                |
-tasks/done/:token     | GET    | get all user tasks with status done     | user token id                |
+tasks/notdone  | GET    | get all user tasks with status not done | user token id                |
+tasks/done    | GET    | get all user tasks with status done     | user token id                |
 tasks/:id             | GET    | get specific user task                  | id                           |
 tasks/priority/:token | GET    | get specific user task                  | user token id                |
 tasks/                | POST   | create task                             | task_name, due_date, priority|

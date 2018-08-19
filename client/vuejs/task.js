@@ -19,24 +19,30 @@ var task = new Vue({
     methods: {
         addTask() {
             event.preventDefault()
-            axios.post('http://localhost:3000/tasks', {
-                task_name: this.task_name,
-                due_date: this.due_date,
-                priority: this.priority,
-                token
+            axios({
+                method: 'post',
+                url: 'http://localhost:3000/tasks',
+                headers: {
+                    token
+                },
+                data: {
+                    task_name: this.task_name,
+                    due_date: this.due_date,
+                    priority: this.priority
+                }
             })
-                .then((response) => { 
-                    if (response.status == 201) {
-                        swal(response.data.message,'Press OK', "success");
-                    }
+            .then((response) => { 
+                if (response.status == 201) {
+                    swal(response.data.message,'Press OK', "success");
+                }
 
-                })
-                .catch((err) => {
-                    console.log(err);
-                    
-                    swal(err.message)
+            })
+            .catch((err) => {
+                console.log(err);
+                
+                swal(err.message)
 
-                })
+            })
         },
 
         logout() {
@@ -47,42 +53,59 @@ var task = new Vue({
         getTask(){
             this.tasks = []
             event.preventDefault()
-            axios.get(`http://localhost:3000/tasks/notdone/${token}`)
+            axios({
+                method: 'get',
+                url: `http://localhost:3000/tasks/notdone`,
+                headers: {
+                    token
+                }
+            })
             .then((response) => {
-                console.log(response); 
+                console.log(response);
                 this.tasks = response.data.data
             })
             .catch((err) => {
-
+                console.log(err.message);
+                
             })
         },
 
         getOneTask(task){
             let id = (task._id)
-            console.log(id);
+            
             event.preventDefault()
-            axios.get(`http://localhost:3000/tasks/${id}`)
+            axios({
+                method: 'get',
+                url: `http://localhost:3000/tasks/${id}`,
+                headers: {
+                    token
+                }
+            })
             .then((response) => {
                 this.task_name = response.data.data.task_name
                 this.due_date = response.data.data.due_date.slice(0,10)
                 this.priority = response.data.data.priority
                 this.id = response.data.data._id
             }).catch((err) => {
-                
+                swal(err.message)
             });
         },
 
         getDoneTask(){
             event.preventDefault()
             this.task = []
-            axios.get(`http://localhost:3000/tasks/done/${token}`)
+            axios({
+                method: 'get',
+                url: `http://localhost:3000/tasks/done`,
+                headers: {
+                    token
+                }
+            })
             .then((response) => {
-                console.log(response.data.data);
-                
                 this.tasks = response.data.data
 
             }).catch((err) => {
-                
+                swal(err.message)
             });
         },
 
