@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Dashboard</title>
+    <!-- bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+        crossorigin="anonymous">
+    <link rel="stylesheet" href="./css/dashboard.css">
+    <!-- google font -->
+    <link href="https://fonts.googleapis.com/css?family=Concert+One" rel="stylesheet">
+
+    <!-- development version, includes helpful console warnings -->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+    <!-- axios -->
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <!-- swal -->
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <!-- Debug CSS -->
+    <!-- <link rel="stylesheet" type="text/css" media="screen" href="./css/debug.css" /> -->
+</head>
+
+<body>
+    <div id="task">
+        <div class="wrapper">
+            <!-- Sidebar Holder -->
+            <nav id="sidebar">
+                <div class="sidebar-header" style="text-align:center;">
+                    <img src="./img/icons/logo.png" alt="">
+                    <h3>myTodo</h3>
+                </div>
+
+                <ul class="list-unstyled components">
+                    <li class="active">
+                        <a href="#menu" class="abc" v-on:click="getTask"> <img src="./img/icons/list.png" alt=""> Tasks</a>
+                    </li>
+                    <li>
+                        <a href="" v-on:click="getPriorityTask"> <img src="./img/icons/priority.png" alt=""> Priority Tasks</a>
+                    </li>
+                    <li>
+                        <a href="#menu" v-on:click="getDoneTask"> <img src="./img/icons/done.png" alt=""> Done Tasks</a>
+                    </li>
+                    <li>
+                        <a href="#menu" data-toggle="modal" data-target="#create"><img src="./img/icons/plus.png" alt=""
+                                style="margin-right: 5px;">Add Tasks</a>
+                    </li>
+                    <li>
+                        <a href="#menu" data-toggle="modal" data-target="#weather"> <img src="./img/icons/cloud.png" alt="">                            Weather</a>
+                    </li>
+                    <li>
+                        <a href="#menu" v-on:click="logout"><img src="./img/icons/logout.png" alt="" style="margin-right: 5px;">Log
+                            Out
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Page Content Holder -->
+            <div id="content">
+                <nav class="navbar navbar-default">
+                    <div class="container-fluid">
+                        <div class="navbar-header">
+                            <button type="button" id="sidebarCollapse" class="btn btn-info navbar-btn">
+                                <span>my Todo</span>
+                            </button>
+                        </div>
+                    </div>
+                </nav>
+                <div class="container">
+                    <div class="card" v-for="(task,index) in tasks" style="margin-bottom: 5px; text-align: center; width: 100%">
+                        <div class="card-body">
+                            <table style="width:100%;">
+                                <tr>
+                                    <th>No</th>
+                                    <th>Task</th>
+                                    <th>Due Date</th>
+                                    <th>Action</th>
+                                </tr>
+                                <tr>
+                                    <td> {{index+1}} </td>
+                                    <td> {{task.task_name}} </td>
+                                    <td> {{task.due_date.slice(0,10)}} </td>
+                                    <td>
+                                        <a href="" v-on:click="doneTask(task._id)"> <img src="./img/icons/success.png" alt="">                                            </a>
+                                        <a href="" v-on:click="getOneTask(task)"data-toggle="modal" data-target="#edit"><img src="./img/icons/pencil.png" alt=""></a>
+                                        <a href="" v-on:click="deleteTask(task._id)"><img src="./img/icons/garbage.png" alt=""></a>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Weather-->
+        <div class="modal fade" id="weather" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Select City</h5>
+                        <button type="button" class="close" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <input v-model="city" type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="City name">
+                            <small id="emailHelp" class="form-text text-muted">Please input the city</small>
+                            <div v-show="weathers"> <img src="./img/icons/cloud-warna.png" alt=""> Description : {{ weathers}} </div>
+                            <div v-show="temperature"> <img src="./img/icons/thermometer.png" alt=""> Temeprature : {{ temperature }} &#8451; </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button v-on:click="getWeather" type="button" class="btn btn-primary">Show</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Task-->
+        <div class="modal fade" id="create" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Add Task</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="form-group">
+                                <label for="exampleInputEmail1">Task</label>
+                                <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter Task" v-model="task_name">
+                            </div>
+                            <div class="form-group">
+                                <label for="exampleInputPassword1">Due Date</label>
+                                <input type="date" class="form-control" id="exampleInputPassword1" placeholder="Enter Date" v-model="due_date">
+                            </div>
+                            <div class="form-group form-check">
+                                <input type="checkbox" :value="true" v-model="priority" class="form-check-input" id="exampleCheck1">
+                                <label class="form-check-label" for="exampleCheck1">Priority</label>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button v-on:click="addTask" data-dismiss="modal" type="button" class="btn btn-primary">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Edit Task-->
+        <div class="modal fade" id="edit" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Edit Task</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="form-group">
+                                <label for="exampleInputEmail1">Task</label>
+                                <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" v-model="task_name">
+                            </div>
+                            <div class="form-group">
+                                <label for="exampleInputPassword1">Due Date</label>
+                                <input type="date" class="form-control" id="exampleInputPassword1" v-model="due_date">
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button v-on:click="updateTask" type="button" data-dismiss="modal" class="btn btn-primary">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+        crossorigin="anonymous"></script>
+    <script src="./toogle.js"></script>
+    <script src="./vuejs/task.js"></script>
+</body>
+
+</html>
